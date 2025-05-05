@@ -80,3 +80,38 @@ class CustomLine : View {
 	}
 }
 ```
+
+### Basic Shape: Rectangle
+```kotlin
+class CustomLine : View {
+	// omitting default constructors
+
+	private val paint = Paint()
+    private val rectangle = RectF()
+    
+    fun onSizeChanged(w: Int, h: Int, oldW: Int, oldH: Int) {
+		super.onSizeChanged(w, h, oldW, oldH)
+		val rectangleMarginHorizontal = dpToPx(RECT_MARGIN_HORIZONTAL_DP)
+        val rectangleWidth = w - 2 * rectangleMarginHorizontal
+        val rectangleHeight = rectangleWidth / 2
+        rectangle.set(
+			left = rectangleMarginHorizontal,
+			top = (h - rectangleHeight) / 2,
+			right = rectangleMarginHorizontal + rectangleWidth,
+			bottom = (h + rectangleHeight) / 2
+		)
+	}
+
+	override fun onDraw(canvas: Canvas) {
+		paint.color = Color.Red
+		paint.style = Paint.Style.STROKE // or FILL to fill the rect
+		paint.strokeWidth = dpToPx(LINE_HEIGHT_DP)
+		canvas.drawRect(rectangle, paint)
+	}
+    
+    companion object {
+		const val LINE_HEIGHT_DP = 2f
+        const val RECT_MARGIN_HORIZONTAL_DP = 20f
+	}
+}
+```
