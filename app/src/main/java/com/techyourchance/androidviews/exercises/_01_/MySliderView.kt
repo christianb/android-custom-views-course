@@ -5,9 +5,12 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
+import android.view.MotionEvent
 import androidx.core.content.ContextCompat
 import com.techyourchance.androidviews.CustomViewScaffold
 import com.techyourchance.androidviews.R
+import com.techyourchance.androidviews.general.extensions.MotionEventExtensions.distanceTo
+import kotlin.math.sqrt
 
 class MySliderView : CustomViewScaffold {
 
@@ -45,8 +48,29 @@ class MySliderView : CustomViewScaffold {
 
         circleRadius = dpToPx(CIRCLE_RADIUS_DP)
         circleX = lineLength * CIRCLE_X_POS_FRACTION + lineMarginHorizontal
-        circleY = lineY// + (lineHeight / 2)
+        circleY = lineY
+    }
 
+    private var isDrag = false
+    private var lastEventX = 0f
+
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        return if (event.action == MotionEvent.ACTION_DOWN) {
+            if (event.distanceTo(circleX, circleY) > circleRadius) return false
+            isDrag = true
+            lastEventX = event.x
+            true
+        } else if (isDrag && event.action == MotionEvent.ACTION_MOVE) {
+            val dx = event.x - lastEventX
+            if (circleX + dx < lineXLeft || circleX + dx > lineXRight) return true
+            circleX += dx
+            lastEventX = event.x
+            invalidate()
+            true
+        } else {
+            isDrag = false
+            false
+        }
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -62,7 +86,6 @@ class MySliderView : CustomViewScaffold {
             /* stopY = */ lineY,
             /* paint = */ paint
         )
-
 
         paint.color = ContextCompat.getColor(context, R.color.primary_variant)
         paint.style = Paint.Style.FILL

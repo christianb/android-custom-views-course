@@ -153,3 +153,6 @@ class CustomLine : View {
 	}
 }
 ```
+
+### Touch Events
+Handling touch events in a custom view just override `onTouchEvent(event: MotionEvent?): Boolean`.
