@@ -115,3 +115,41 @@ class CustomLine : View {
 	}
 }
 ```
+
+### Basic Shape: Circle
+```kotlin
+class CustomLine : View {
+	// omitting default constructors
+
+	private val paint = Paint()
+    private var circleXCenter = 0f
+    private var circleYCenter = 0f
+    private var circleRadius = 0f
+    
+    fun onSizeChanged(w: Int, h: Int, oldW: Int, oldH: Int) {
+		super.onSizeChanged(w, h, oldW, oldH)
+		circleXCenter = w / 2f
+        circleYCenter = h * CIRCLE_HEIGHT_POS_FRACTION
+        circleRadius = h * CIRCLE_RADIUS_FRACTION
+        
+	}
+
+	override fun onDraw(canvas: Canvas) {
+		paint.color = Color.Red
+		paint.style = Paint.Style.STROKE // or FILL to fill the rect
+		paint.strokeWidth = dpToPx(LINE_HEIGHT_DP)
+		canvas.drawCircle(
+            cx = circleXCenter, 
+            cy = circleYCenter, 
+            radius = circleRadius, 
+            paint
+		)
+	}
+    
+    companion object {
+		const val LINE_HEIGHT_DP = 2f
+        const val CIRCLE_HEIGHT_POS_FRACTION = 0.8f
+        const val CIRCLE_RADIUS_FRACTION = 0.1f
+	}
+}
+```
