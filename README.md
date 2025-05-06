@@ -2,9 +2,9 @@
 
 This repo contains the source code of the tutorial application for [Android Custom Views Course](https://www.techyourchance.com/courses/android-custom-views/).
 
-## Learnings
+## 1. Basics
 
-### Creating a Custom View
+### 1.1 Creating a Custom View
 When creating a custom View you need to extend the class `View`.
 Then you implement the default constructors.
 
@@ -12,19 +12,19 @@ There are two important functions you have to override.
 1. `onSizeChanged(w, h, oldW, oldH)` - will be called when this view changes its size. This is the place to init all values that depend on the size of the view.
 2. `onDraw(c)` - will be called when this view needs to redraw itself.
 
-### Coordinate System
+### 1.2 Coordinate System
 The coordinate system origin `(0,0)` is located at the top-left of the screen.
 ![image](./screenshots/coordinate-system.png)
 
 Nested views x and y coordinates are measured relative to its parent's origin.
 ![image](./screenshots/nested-view-coordinates.png)
 
-### Density Independent Pixel
+### 1.3 Density Independent Pixel
 A size of a pixel varies between different screens.
 In some cases, UI element should have specific physical size, regardless of screen's characteristics.
 - `1dp = ~0.16 mm`
 
-### Best Practices
+### 1.4 Best Practices
 `onDraw` should not contain any computational intense logic. `onDraw` should return as quickly as possible. Instead move any computations into `onSizeChanged`.
 
 General util function to convert dp into px:
@@ -38,7 +38,7 @@ fun dpToPx(dp: Float): Float {
 }
 ```
 
-### Basic Shape: Line
+### 1.5 Basic Shape: Line
 To draw anything we need an instance of `Paint`.
 ```kotlin
 class CustomLine : View {
@@ -81,7 +81,7 @@ class CustomLine : View {
 }
 ```
 
-### Basic Shape: Rectangle
+### 1.6 Basic Shape: Rectangle
 ```kotlin
 class CustomLine : View {
 	// omitting default constructors
@@ -116,7 +116,7 @@ class CustomLine : View {
 }
 ```
 
-### Basic Shape: Circle
+### 1.7 Basic Shape: Circle
 ```kotlin
 class CustomLine : View {
 	// omitting default constructors
@@ -154,10 +154,10 @@ class CustomLine : View {
 }
 ```
 
-### Touch Events
+### 1.8 Touch Events
 Handling touch events in a custom view just override `onTouchEvent(event: MotionEvent?): Boolean`.
 
-### View State Preservation on Config Change (and Process Death)
+### 1.9 View State Preservation on Config Change (and Process Death)
 When the system determines that the view must save its state it calls `onSaveInstanceState()`.
 
 Similarly to restore a view state you need to override `onRestoreInstanceState()`.
@@ -170,3 +170,5 @@ override fun onCreateView(...): View {
 	return MyView(context).apply { id = R.id.my_view }
 }
 ```
+
+## 2. Animations
