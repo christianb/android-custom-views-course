@@ -156,3 +156,17 @@ class CustomLine : View {
 
 ### Touch Events
 Handling touch events in a custom view just override `onTouchEvent(event: MotionEvent?): Boolean`.
+
+### View State Preservation on Config Change (and Process Death)
+When the system determines that the view must save its state it calls `onSaveInstanceState()`.
+
+Similarly to restore a view state you need to override `onRestoreInstanceState()`.
+
+To save the state of the view you create a new State class that extends `View.BaseSavedState`.
+
+To allow the system calling the functions above, you __must ensure__ that your created view as some unique id.
+```kotlin
+override fun onCreateView(...): View {
+	return MyView(context).apply { id = R.id.my_view }
+}
+```
