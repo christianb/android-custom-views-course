@@ -4,8 +4,12 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.os.Parcel
+import android.os.Parcelable
 import android.util.AttributeSet
 import android.view.MotionEvent
+import android.view.View
+import android.view.View.BaseSavedState
 import androidx.core.content.ContextCompat
 import com.techyourchance.androidviews.CustomViewScaffold
 import com.techyourchance.androidviews.R
@@ -25,7 +29,7 @@ class MySliderView : CustomViewScaffold {
 	)
 
 	var sliderChangeListener: SliderChangeListener? = null
-	var value: Float = 0f
+	var circleXFraction: Float = CIRCLE_X_POS_FRACTION
 
 	private val paint = Paint()
 
@@ -38,6 +42,8 @@ class MySliderView : CustomViewScaffold {
 	private var circleY = 0f
 	private var circleRadius = 0f
 
+	private var lineLength = 0f
+
 	override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
 		super.onSizeChanged(w, h, oldw, oldh)
 		val lineMarginHorizontal = dpToPx(LINE_MARGIN_HORIZONTAL_DP)
@@ -47,10 +53,10 @@ class MySliderView : CustomViewScaffold {
 		lineY = h * LINE_VERTICAL_POS_FRACTION
 		lineHeight = dpToPx(LINE_HEIGHT)
 
-		val lineLength = lineXRight - lineXLeft
+		lineLength = lineXRight - lineXLeft
 
 		circleRadius = dpToPx(CIRCLE_RADIUS_DP)
-		circleX = lineLength * CIRCLE_X_POS_FRACTION + lineMarginHorizontal
+		circleX = lineLength * circleXFraction + lineMarginHorizontal
 		circleY = lineY
 
 		updateSliderValue(circleX)
@@ -80,9 +86,8 @@ class MySliderView : CustomViewScaffold {
 	}
 
 	private fun updateSliderValue(sliderXPos: Float) {
-		val lineLength = lineXRight - lineXLeft
-		value = (sliderXPos - lineXLeft) / lineLength
-		sliderChangeListener?.onValueChanged(value)
+		circleXFraction = (sliderXPos - lineXLeft) / lineLength
+		sliderChangeListener?.onValueChanged(circleXFraction)
 	}
 
 	override fun onDraw(canvas: Canvas) {
@@ -110,11 +115,56 @@ class MySliderView : CustomViewScaffold {
 		)
 	}
 
+	override fun onSaveInstanceState(): Parcelable {
+		return MySliderState(super.onSaveInstanceState(), circleXFraction)
+	}
+
+	override fun onRestoreInstanceState(state: Parcelable?) {
+		if (state is MySliderState) {
+			super.onRestoreInstanceState(state.superSavedState)
+			circleXFraction = state.circleXFraction
+		} else super.onRestoreInstanceState(state)
+	}
+
 	companion object {
 		private const val LINE_MARGIN_HORIZONTAL_DP = 20f
 		private const val LINE_VERTICAL_POS_FRACTION = 0.7f
 		private const val LINE_HEIGHT = 5f
 		private const val CIRCLE_RADIUS_DP = 15f
 		private const val CIRCLE_X_POS_FRACTION = 0.5f
+	}
+}
+
+private class MySliderState: BaseSavedState {
+	val superSavedState: Parcelable?
+	val circleXFraction: Float
+
+	constructor(
+		superSavedState: Parcelable?,
+		circleXCenterFraction: Float,
+	): super(superSavedState) {
+		this.superSavedState = superSavedState
+		this.circleXFraction = circleXCenterFraction
+	}
+
+	constructor(parcel: Parcel) : super(parcel) {
+		this.superSavedState = parcel.readParcelable(BaseSavedState::class.java.classLoader)
+		this.circleXFraction = parcel.readFloat()
+	}
+
+	override fun writeToParcel(out: Parcel, flags: Int) {
+		super.writeToParcel(out, flags)
+		out.writeParcelable(superSavedState, flags)
+		out.writeFloat(circleXFraction)
+	}
+
+	companion object CREATOR : Parcelable.Creator<MySliderState> {
+		override fun createFromParcel(parcel: Parcel): MySliderState {
+			return MySliderState(parcel)
+		}
+
+		override fun newArray(size: Int): Array<MySliderState?> {
+			return arrayOfNulls(size)
+		}
 	}
 }

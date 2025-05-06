@@ -34,7 +34,7 @@ class MySliderFragment : BaseFragment(), SliderChangeListener {
 
 	override fun onStart() {
 		super.onStart()
-		sliderText.text = mySlider.value.toString()
+		sliderText.text = mySlider.circleXFraction.toString()
 	}
 
 	companion object {
