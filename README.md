@@ -174,7 +174,7 @@ override fun onCreateView(...): View {
 ## 2. Animations
 Animations are a gradually change of UI properties over time.
 
-### Object Animator
+### ObjectAnimator
 Use the `ObjectAnimator` to animate views. There are several functions to initialize it. 
 One is `ofFloat` and it expects several arguments:
 - `target`: the target view to be animated
@@ -182,6 +182,10 @@ One is `ofFloat` and it expects several arguments:
 - `vararg values`: range of values the animation should apply
 
 Once you have an instance of `ObjectAnimator` you can call `start()` and `cancel()`.
+
+The __ObjectAnimator__ is useful when you do not have control over the view you want to animate.
+However, if you own the view you wanna animate you should consider `ValueAnimator` instead.
+Actually `ObjectAnimator` extends `ValueAnimator`.
 
 #### Loop
 By default `ObjectAnimator` will animate only once without any loop.
@@ -195,3 +199,27 @@ To adjust the duration of the animation (eg slow it down) you can set the `durat
 
 #### Interpolation
 The interpolation specifies if the movement is linear or not. To get a linear interpolation you can set `interpolator = LinearInterpolator()`.
+
+### ValueAnimator
+```kotlin
+fun startAnimation(period: Long) {
+	valueAnimator = ValueAnimator.ofFloat(0, 1f).apply {
+		interpolator = LinearInterpolator() // or AccelerateInterpolator()
+        duration = period / 2 // because we are reversing the animation, so it will be half the period
+        repeatCount = ValueAnimater.INFINITE
+        repeatMode = Valueanimator.REVERSE
+        val relativePosition = 0f // needs to properly calculated and set
+        setCurrentFraction(relativePosition)
+        addUpdateListener {
+			// gets the value of the ValueAnimator
+			val fraction = it.animatedValue as Float // will be in range 0..1
+		    // update the state of the view according to the current animated fraction and then invalidate
+            invalidate()
+        }
+        start()
+    }
+}
+```
+
+### Path
+Allows to draw custom shapes.
