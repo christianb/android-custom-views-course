@@ -172,3 +172,26 @@ override fun onCreateView(...): View {
 ```
 
 ## 2. Animations
+Animations are a gradually change of UI properties over time.
+
+### Object Animator
+Use the `ObjectAnimator` to animate views. There are several functions to initialize it. 
+One is `ofFloat` and it expects several arguments:
+- `target`: the target view to be animated
+- `propertName`: the name of the property (Float) as a String (it used reflection under to hood)
+- `vararg values`: range of values the animation should apply
+
+Once you have an instance of `ObjectAnimator` you can call `start()` and `cancel()`.
+
+#### Loop
+By default `ObjectAnimator` will animate only once without any loop.
+To keep the animation running you can set the `repeatCount = ValueAnimator.INFINITE`.
+
+#### Repeat Mode
+To change the repeat mode, like to reverse the animation you can set the `repeatMode = ValueAnimator.REVERSE`.
+
+#### Duration
+To adjust the duration of the animation (eg slow it down) you can set the `duration = 100`(ms).
+
+#### Interpolation
+The interpolation specifies if the movement is linear or not. To get a linear interpolation you can set `interpolator = LinearInterpolator()`.
