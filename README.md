@@ -173,8 +173,10 @@ override fun onCreateView(...): View {
 
 ## 2. Animations
 Animations are a gradually change of UI properties over time.
+You can either animate the entire view (from external) -> see `ObjectAnimator`.
+Or you can animate the view from inside, if you have control over the source code -> see `ValueAnimator`.
 
-### ObjectAnimator
+### 2.1 ObjectAnimator (external)
 Use the `ObjectAnimator` to animate views. There are several functions to initialize it. 
 One is `ofFloat` and it expects several arguments:
 - `target`: the target view to be animated
@@ -187,20 +189,20 @@ The __ObjectAnimator__ is useful when you do not have control over the view you 
 However, if you own the view you wanna animate you should consider `ValueAnimator` instead.
 Actually `ObjectAnimator` extends `ValueAnimator`.
 
-#### Loop
+#### 2.1.1 Loop
 By default `ObjectAnimator` will animate only once without any loop.
 To keep the animation running you can set the `repeatCount = ValueAnimator.INFINITE`.
 
-#### Repeat Mode
+#### 2.1.2 Repeat Mode
 To change the repeat mode, like to reverse the animation you can set the `repeatMode = ValueAnimator.REVERSE`.
 
-#### Duration
+#### 2.1.3 Duration
 To adjust the duration of the animation (eg slow it down) you can set the `duration = 100`(ms).
 
-#### Interpolation
+#### 2.1.4 Interpolation
 The interpolation specifies if the movement is linear or not. To get a linear interpolation you can set `interpolator = LinearInterpolator()`.
 
-### ValueAnimator
+### 2.2 ValueAnimator (internal)
 ```kotlin
 fun startAnimation(period: Long) {
 	valueAnimator = ValueAnimator.ofFloat(0, 1f).apply {
@@ -221,7 +223,7 @@ fun startAnimation(period: Long) {
 }
 ```
 
-### Path
+### 2.3 Path
 Allows to draw custom shapes.
 During `onSizeChanged()` you define the path of the shape. This is defining a triangle shape.
 ```kotlin
@@ -235,7 +237,7 @@ path.close()
 
 To finally draw the shape you call `canvas.drawPath(path, paint)` within `onDraw()`. 
 
-#### Path Animation
+#### 2.3.1 Path Animation
 You can animate along a (already set) path using `PathMeasure` along with `ValueAnimator`:
 ```kotlin
 fun updatePath(fraction: Float) {
@@ -255,7 +257,7 @@ fun animatePath() {
 }
 ```
 
-### AnimatorSet
+### 2.4 AnimatorSet
 Instead creating several `ValueAnimator`'s you can stack multiple animations using `AnimatorSet`. You can reference different `ValueAnimator` instances within an `AnimatorSet`:
 ```kotlin
 val animatorSet = AnimatorSet().apply {
