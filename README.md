@@ -223,3 +223,34 @@ fun startAnimation(period: Long) {
 
 ### Path
 Allows to draw custom shapes.
+During `onSizeChanged()` you define the path of the shape. This is defining a triangle shape.
+```kotlin
+path.reset()
+path.moveTo(x, y)
+path.lineTo(right.x, right.y)
+path.lineTo(left.x, left.y)
+path.lineTo(top.x, top.y)
+path.close()
+```
+
+To finally draw the shape you call `canvas.drawPath(path, paint)` within `onDraw()`. 
+
+#### Path Animation
+You can animate along a (already set) path using `PathMeasure` along with `ValueAnimator`:
+```kotlin
+fun updatePath(fraction: Float) {
+	val pathMeasure = PathMeasure(referencePath, false)
+	val totalPathLength = 42
+	path.reset()
+	pathMeasure.getSegment(0f, fraction * totalPathLength, referencePath, true)
+    invalidate()
+}
+
+fun animatePath() {
+	valueAnimator = ValueAnimator.ofFloat(0f, 1f).apply {
+		// ...
+		addUpdateListener { updatePath(it.animatedValue as Float) }
+    }
+    valueAnimator.start()
+}
+```
