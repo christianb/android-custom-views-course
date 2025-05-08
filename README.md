@@ -303,4 +303,4 @@ You can also adjust each corner like:
 	 ),
     Path.Direction.CW)
 ```
-[!image](./screenshots/PathArc.png)
+![image](./screenshots/PathArc.png)
