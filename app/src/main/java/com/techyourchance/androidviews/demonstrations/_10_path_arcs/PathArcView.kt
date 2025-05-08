@@ -10,8 +10,17 @@ import kotlin.math.min
 
 class PathArcView : CustomViewScaffold {
 
-    private val paint = Paint()
-    private var lineSize = 0f
+    private val rectPaint = Paint().apply {
+        strokeWidth = dpToPx(LINE_SIZE_DP)
+        color = ContextCompat.getColor(context, R.color.primary_variant)
+        style = Paint.Style.STROKE
+        isAntiAlias = true
+    }
+
+    private val arcPaint = Paint(rectPaint).apply {
+        color = ContextCompat.getColor(context, R.color.green)
+    }
+
     private val rectPath = Path()
     private val arcPath = Path()
 
@@ -28,14 +37,7 @@ class PathArcView : CustomViewScaffold {
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
 
-        lineSize = dpToPx(LINE_SIZE_DP)
-
-        paint.style = Paint.Style.STROKE
-        paint.strokeWidth = lineSize
-        paint.isAntiAlias = true
-
         val rectSize = min(w, h) / 2f
-
         val rect = RectF(
             (width - rectSize) / 2,
             (height - rectSize) / 2,
@@ -44,8 +46,8 @@ class PathArcView : CustomViewScaffold {
         )
 
         rectPath.reset()
-        //rectPath.addRect(rect, Path.Direction.CW)
-        //rectPath.addRoundRect(rect, rectSize / 2, rectSize / 2, Path.Direction.CW)
+//        rectPath.addRect(rect, Path.Direction.CW)
+//        rectPath.addRoundRect(rect, rectSize / 2, rectSize / 2, Path.Direction.CW)
         rectPath.addRoundRect(rect,
             floatArrayOf(
                 0f, 0f,
@@ -54,16 +56,15 @@ class PathArcView : CustomViewScaffold {
                 0f, 0f,
             ),
             Path.Direction.CW)
+
         arcPath.reset()
         arcPath.addArc(rect, 0f, 270f)
     }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        paint.color = ContextCompat.getColor(context, R.color.primary_variant)
-        canvas.drawPath(rectPath, paint)
-        paint.color = ContextCompat.getColor(context, R.color.green)
-        canvas.drawPath(arcPath, paint)
+        canvas.drawPath(rectPath, rectPaint)
+//        canvas.drawPath(arcPath, arcPaint)
     }
 
     companion object {

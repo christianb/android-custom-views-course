@@ -55,10 +55,20 @@ class AutoScalingTextView : CustomViewScaffold {
         setText(text)
     }
 
+    private val baselinePaint: Paint = Paint().apply {
+        color = Color.BLACK
+        strokeWidth = 4f
+        style = Paint.Style.STROKE
+    }
+
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         val x = width / 2f
-        val y = (height / 2f) - ((textPaint.descent() + textPaint.ascent()) / 2f)
+        val offset = ((textPaint.descent() + textPaint.ascent()) / 2f)
+        val y = (height / 2f) - offset
         canvas.drawText(text, x, y, textPaint)
+
+        canvas.drawLine(0f, height / 2f, width.toFloat(), height / 2f, baselinePaint)
+        canvas.drawLine(width / 2f, 0f, width / 2f, height.toFloat(), baselinePaint)
     }
 }
