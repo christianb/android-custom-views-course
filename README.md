@@ -265,3 +265,42 @@ val animatorSet = AnimatorSet().apply {
     start()
 }
 ```
+
+## 3. Text
+When working with text you should enable AntiAlias on the `Paint`:
+```kotlin
+val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+paint.color = Color.BLUE
+paint.textalign = Paint.Align.CENTER // text will be aligned to the baseline that is basically set using this
+textPaint.typeface = ResourceCompat.getFont(context, R.font.your_custom_font)
+```
+
+## Rect Path
+A rectangle can be drawn by defining a rect path.
+```kotlin
+val rectSize = min(w, h) / 2f
+val rect = RectF(
+    (width - rectSize) / 2,
+    (height - rectSize) / 2,
+    width.toFloat() - (width - rectSize) / 2,
+    (height + rectSize) / 2
+)
+
+rectPath.reset()
+rectPath.addRect(rect, Path.Direction.CW)
+```
+
+You can also adjust each corner like:
+```kotlin
+ rectPath.addRoundRect(
+    rect, 
+    floatArrayOf(
+        // the order depends on Path.Direction.CW (clock-wise) or Path.Direction.CCW (counter-clock-wise)
+        0f, 0f, // top-left
+        rectSize / 2, rectSize / 2, // makes the top-right corner round, rectSize / 2 == radius
+        0f, 0f, // bottom-right
+        0f, 0f,  // bottom-left
+	 ),
+    Path.Direction.CW)
+```
+[!image](./screenshots/PathArc.png)
