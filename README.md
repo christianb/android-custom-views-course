@@ -254,3 +254,12 @@ fun animatePath() {
     valueAnimator.start()
 }
 ```
+
+### AnimatorSet
+Instead creating several `ValueAnimator`'s you can stack multiple animations using `AnimatorSet`. You can reference different `ValueAnimator` instances within an `AnimatorSet`:
+```kotlin
+val animatorSet = AnimatorSet().apply {
+	play(firstValueAnimator).before(secondValueAnimator)
+    start()
+}
+```

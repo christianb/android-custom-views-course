@@ -1,5 +1,6 @@
 package com.techyourchance.androidviews.exercises._05_
 
+import android.animation.AnimatorSet
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
@@ -8,6 +9,7 @@ import android.graphics.Path
 import android.graphics.PathMeasure
 import android.graphics.PointF
 import android.util.AttributeSet
+import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.LinearInterpolator
 import androidx.core.content.ContextCompat
 import com.techyourchance.androidviews.CustomViewScaffold
@@ -29,7 +31,11 @@ class MyCheckmarkView : CustomViewScaffold {
 
 	private var checkmarkShortSideLength = 0f
 
-	private var valueAnimator: ValueAnimator? = null
+	private var scale = 1f
+	private var scalePivotX = 0f
+	private var scalePivotY = 0f
+
+	private var animatorSet: AnimatorSet? = null
 
 	constructor(context: Context?) : super(context)
 	constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
@@ -42,14 +48,26 @@ class MyCheckmarkView : CustomViewScaffold {
 	)
 
 	fun startAnimation(durationMs: Long) {
-		valueAnimator = ValueAnimator.ofFloat(0f, 1f).apply {
-			interpolator = LinearInterpolator()
-			duration = durationMs
+		val scaleValueAnimator = ValueAnimator.ofFloat(1f, 1.2f, 1f).apply {
+			interpolator = AccelerateDecelerateInterpolator()
+			duration = durationMs / 2
 			addUpdateListener {
-				updatePath(fraction = it.animatedValue as Float)
+				scale = it.animatedValue as Float
+				invalidate()
 			}
 		}
-		valueAnimator?.start()
+
+		val pathValueAnimator = ValueAnimator.ofFloat(0f, 1f).apply {
+			interpolator = LinearInterpolator()
+			duration = durationMs
+			addUpdateListener { updatePath(fraction = it.animatedValue as Float) }
+		}
+
+		animatorSet = AnimatorSet().apply {
+			play(pathValueAnimator)
+			play(scaleValueAnimator).after(durationMs * 3 / 4)
+			start()
+		}
 	}
 
 	private fun updatePath(fraction: Float) {
@@ -60,14 +78,8 @@ class MyCheckmarkView : CustomViewScaffold {
 		invalidate()
 	}
 
-	fun PointF.distanceTo(other: PointF): Float {
-		val dx = other.x - x // Difference in x-coordinates
-		val dy = other.y - y // Difference in y-coordinates
-		return sqrt((dx * dx + dy * dy).toDouble()).toFloat() // Calculate the distance
-	}
-
 	fun stopAnimation() {
-		valueAnimator?.cancel()
+		animatorSet?.cancel()
 	}
 
 	override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -87,6 +99,9 @@ class MyCheckmarkView : CustomViewScaffold {
 		val pivotPoint = PointF(pivotPointX, checkmarkTop + checkmarkHeight)
 		val endPoint = PointF(checkmarkLeft + checkmarkWidth, checkmarkTop)
 
+		scalePivotX = checkmarkLeft + checkmarkWidth / 2
+		scalePivotY = checkmarkTop + checkmarkHeight / 2
+
 		referenceCheckmarkPath.reset()
 		referenceCheckmarkPath.moveTo(startPoint.x, startPoint.y)
 		referenceCheckmarkPath.lineTo(pivotPoint.x, pivotPoint.y)
@@ -103,10 +118,11 @@ class MyCheckmarkView : CustomViewScaffold {
 
 	override fun onDraw(canvas: Canvas) {
 		super.onDraw(canvas)
+		canvas.scale(scale, scale, scalePivotX, scalePivotY)
 		canvas.drawPath(animatedCheckmarkPath, paint)
 	}
 
 	companion object {
-		const val LINE_SIZE_DP = 15f
+		const val LINE_SIZE_DP = 25f
 	}
 }
