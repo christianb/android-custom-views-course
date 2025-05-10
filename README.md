@@ -335,3 +335,101 @@ override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
 	setMeasuredDimension(width, height) // must call this function!
 }
 ```
+
+## 6. Matrix
+Matrix is a very powerful tool to apply operations like translate (move), rotate or scale on your views.
+Multiple matrix operations could be joined into a single transformation matrix including translation, rotation and scaling.
+
+### 6.1 Translate
+
+```kotlin
+val transformationMatrix = Matrix()
+
+override fun onDraw(canvas: Canvas) {
+	drawnPath.reset()
+	drawnPath.set(referencePath)
+    
+	transformationMatrix.reset()
+	transformationMatrix.postTranslate(dx, dy)
+	drawnPath.transform(transformationMatrix)
+
+	canvas.drawPath(drawnPath, paint)
+}
+```
+
+### 6.2 Rotate
+The pivot of the rotation is at the origin (0,0) of the coordinate system. If you wanna change the pivot point for the rotation you can pass it to the postRotate function.
+
+__The order of the transform operation is crucial. Be aware that changing the order of transformation are not commutative and can lead to different results when applied in different order.__
+
+```kotlin
+val transformationMatrix = Matrix()
+
+override fun onDraw(canvas: Canvas) {
+	drawnPath.reset()
+	drawnPath.set(referencePath)
+    
+	transformationMatrix.reset()
+	transformationMatrix.postRotate(degrees, pivotX, pivotY)
+	drawnPath.transform(transformationMatrix)
+
+	canvas.drawPath(drawnPath, paint)
+}
+```
+
+### 6.3 Scale
+```kotlin
+val transformationMatrix = Matrix()
+
+override fun onDraw(canvas: Canvas) {
+	drawnPath.reset()
+	drawnPath.set(referencePath)
+    
+	transformationMatrix.reset()
+	transformationMatrix.postScale(scaleX, scaleY, pivotX, pivotY)
+	drawnPath.transform(transformationMatrix)
+
+	canvas.drawPath(drawnPath, paint)
+}
+```
+
+### 6.4. Matrix Concatenation
+You can multiply (combine) several matrix operations at once to the view.
+
+```kotlin
+val transformationMatrix = Matrix()
+
+override fun onDraw(canvas: Canvas) {
+	drawnPath.reset()
+	drawnPath.set(referencePath)
+    
+	transformationMatrix.reset()
+	transformationMatrix.postScale(scaleX, scaleY, pivotX, pivotY)
+	transformationMatrix.postRotate(degrees, pivotX, pivotY)
+	transformationMatrix.postTranslate(translateX, translateY)
+    drawnPath.transform(transformationMatrix)
+
+	canvas.drawPath(drawnPath, paint)
+}
+```
+
+### 6.5 Canvas Transformation
+Alternatively you can apply the transformation on the whole canvas. This means all views on the canvas gets transformed.
+However, you can use `save()` and `restore()` on the canvas to apply different transformation when drawing a view.
+
+```kotlin
+val transformationMatrix = Matrix()
+
+override fun onDraw(canvas: Canvas) {
+	canvas.save()
+    
+	canvas.transalte(translateX, translateY)
+	canvas.rotate(degrees, pivotX, pivotY)
+	canvas.scale(scaleX, scaleY, pivotX, pivotY)
+    
+    canvas.drawnPath(referencePath, paint)
+    canvas.restore()
+    
+    canvas.drawPath(otherPath, paint) // no matrix transformation is applied on this 
+}
+```
