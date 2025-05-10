@@ -275,7 +275,7 @@ paint.textalign = Paint.Align.CENTER // text will be aligned to the baseline tha
 textPaint.typeface = ResourceCompat.getFont(context, R.font.your_custom_font)
 ```
 
-## Rect Path
+## 4. Rect Path
 A rectangle can be drawn by defining a rect path.
 ```kotlin
 val rectSize = min(w, h) / 2f
@@ -304,3 +304,34 @@ You can also adjust each corner like:
     Path.Direction.CW)
 ```
 ![image](./screenshots/PathArc.png)
+
+## 5. Self Measurement
+Informing the view system about the desired size of the custom view. To do this you can override `onMeasure()`. This function receives two `MeasureSpec` for the width and the height. From this spec you can get the __mode__ and the desired width and height.
+
+__In general if you are overriding `onMeasure` you would not implement `onSizeChanged`!__
+
+In case your custom view size changes you need to inform the system to call `onMeasure` again.
+You can do this by calling `requestLayout()`.
+
+```kotlin
+override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+	val selfWidth = dpToPx(SELF_WIDTH_DP).toInt()
+	val selfHeight = dpToPx(SELF_HEIGHT_DP).toInt()
+
+	val desiredWidth = MeasureSpec.getSize(widthMeasureSpec)
+	val width = when(MeasureSpec.getMode(widthMeasureSpec)) {
+		MeasureSpec.EXACTLY -> desiredWidth // respect the size the parent requests 
+		MeasureSpec.AT_MOST -> min(desiredWidth, selfWidth)
+		else -> selfWidth
+	}
+
+	val desiredHeight = MeasureSpec.getSize(heightMeasureSpec)
+	val height = when(MeasureSpec.getMode(heightMeasureSpec)) {
+		MeasureSpec.EXACTLY -> desiredHeight
+		MeasureSpec.AT_MOST -> min(desiredHeight, selfHeight)
+		else -> selfHeight
+	}
+
+	setMeasuredDimension(width, height) // must call this function!
+}
+```
